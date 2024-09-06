@@ -1,6 +1,8 @@
-# Setting up Github repository for project
 
 """
+File name: test_commit.py
+Description: Setting up Github repository for project and making a test commit
+
 Github username: beckywong37
 Step 1: Add remote repo with token
     git remote add origin <URL>
