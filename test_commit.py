@@ -19,3 +19,13 @@ Step 5: Commit changes
 Step 6: To share changes with remote repo, need to push
     git push origin master
 """
+
+"""
+Setting up git on new laptop
+1. Clone repo (CS361-MainProgram) from git to computer 
+2. git init - initialize Git repo by creating .git directory in project
+    tells git it can start tracking changes
+3. git add ./ - add project files in current directory
+4. git status - check what changes have been staged
+5. git commit -m "Initial commit" - commit changes
+"""
