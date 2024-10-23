@@ -28,16 +28,19 @@ def display_welcome_page():
     display_logo()
     # Title and description
     print(Fore.GREEN+"""
-    ========================================================
-          Welcome to Your Personalized Stock Tracker!
-    ========================================================
-        """+Fore.LIGHTBLUE_EX+"""
-    Add stocks to your watchlist to keep track of them.
-    Stay up to date with real time stock data."""+ Fore.YELLOW+"""
-    --------------------------------------------------------
-    [1] Proceed to your Dashboard
-    [q] Enter ‘q’ to exit
-    --------------------------------------------------------
+        ==================================================================================
+                       Welcome to Your Personalized Stock Tracker!
+        ==================================================================================
+            """+Fore.LIGHTBLUE_EX+"""
+        Add stocks to your watchlist to keep track of them.
+        Stay up to date with real time stock data.
+        Disclaimer: This application is for informational purposes only and is not 
+        intended to be personal financial advice. """+ Fore.YELLOW+"""
+        Commands:
+        -----------------------------------------------------------------------------------
+        [1] Proceed to your Dashboard
+        [q] Enter ‘q’ to exit
+        -----------------------------------------------------------------------------------
     """)
     # User input to proceed or exit application
     cmd = input("Please enter a command: ").strip()
@@ -61,8 +64,10 @@ def display_dashboard():
         To add stocks to your watchlist, enter 1 into the CLI.""")
     watchlist.display_watchlist()
     print(Fore.YELLOW + """
+        Commands
         ----------------------------------------------------------------------------------
         [1] Edit your watchlist
+        [2] Go back to welcome page
         [q] Enter ‘q’ to exit
         ----------------------------------------------------------------------------------""")
     # Get user input
@@ -70,6 +75,8 @@ def display_dashboard():
     # Process user input
     if cmd == "1":
         display_watchlist()
+    elif cmd == "2":
+        display_welcome_page()
     elif cmd == "q":
         print("Exiting program.")
     else:
@@ -165,5 +172,5 @@ def inform_watchlist_display(watchlist):
         [S] : Show list of commands
         ----------------------------------------------------------------------------------""")
 
-# display_welcome_page()
-display_watchlist()
+display_welcome_page()
+# display_watchlist()
