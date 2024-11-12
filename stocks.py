@@ -1,10 +1,11 @@
 """
 Creates the Stock object and Watchlist object
 """
-from venv import create
 
 import yfinance as yf
 from colorama import init, Fore, Style
+import json
+import requests
 
 
 def validate_ticker(ticker):
@@ -48,6 +49,17 @@ class Stock:
         self.low_52 = low_52
         self.recommend = recommend
 
+    def conv_dict(self):
+        """Convert stock to dictionary format for JSON"""
+        return {
+            "ticker": self.ticker,
+            "price": self.price,
+            "change": self.change,
+            "high_52": self.high_52,
+            "low_52": self.low_52,
+            "recommend": self.recommend
+        }
+
     def __str__(self):
         """Print stock details"""
         return f"Ticker: {self.ticker}, Price: {self.price}, % Change: {self.change}, 52 Week High: {self.high_52}, 52 Week Low: {self.low_52}"
@@ -77,13 +89,37 @@ class Watchlist:
                 return
         print(f"{ticker} is not in watchlist.")
 
+    def get_json(self):
+        """Converts stock list into a JSON object"""
+        return [stock.conv_dict() for stock in self.stock_list]
+
+    def sort_list(self, sortBy, sortOrder):
+        """Sorts stock list by 'sortBy' and 'sortOrder' """
+        url = "https://stocksortingservice.onrender.com/stocksort"
+        data = {
+            "sortBy" : sortBy,
+            "sortOrder" : sortOrder,
+            "stocks" : self.get_json()
+        }
+        response = requests.post(url, json=data)
+        if response.status_code == 200:
+            sort_list = response.json()
+            return sort_list
+        else:
+            print("error")
+
     def print_stock_list(self):
         """Prints stock objects currently in stock list"""
         for stock in self.stock_list:
             print(stock)
 
-    def display_watchlist(self):
+    def display_watchlist(self, sort_list=None):
         """Displays watchlist"""
+        # If sort_list is not None, display sort_list
+        if sort_list is None:
+            stock_to_display = self.stock_list
+        else:
+            stock_to_display = sort_list
         # If stock_list is empty, print empty table
         if len(self.stock_list) == 0:
             print(Fore.RED +f"""
@@ -101,15 +137,25 @@ class Watchlist:
         -----------------------------------------------------------------------------------
         | Ticker  | Price     | % Change  | 52W Low/High   | Recommendation |
         -----------------------------------------------------------------------------------""")
-            for stock in self.stock_list:
-                print(Fore.RED + f"        | {stock.ticker:<7} | {stock.price:<9} | {stock.change:<9} | {stock.low_52}/{stock.high_52:<7} | {stock.recommend}")
+            for stock in stock_to_display:
+                # If stock is a dictionary, use this format
+                if isinstance(stock, dict):
+                    print(
+                        Fore.RED + f"        | {stock['ticker']:<7} | {stock['price']:<9} | {stock['change']:<9} | {stock['low_52']}/{stock['high_52']:<7} | {stock['recommend']}")
+                # If stock is an object, use this format
+                else:
+                    print(Fore.RED + f"        | {stock.ticker:<7} | {stock.price:<9} | {stock.change:<9} | {stock.low_52}/{stock.high_52:<7} | {stock.recommend}")
             print(Fore.RED + "        -----------------------------------------------------------------------------------")
 
-# print(validate_ticker('AAPL'))
+
 # stock1 = create_stock('AAPL')
-# # stock2 = create_stock('TSLA')
+# stock2 = create_stock('TSLA')
 # watchlist = Watchlist()
 # watchlist.add_stock('AAPL', stock1)
+# watchlist.add_stock('TSLA', stock2)
+# watchlist.display_watchlist()
+# watchlist.get_json()
+# watchlist.sort_list('price', 'dsc')
 # # watchlist.add_stock(stock2)
 # watchlist.display_watchlist()
 # watchlist.remove_stock(stock1.ticker)
