@@ -256,3 +256,5 @@ def exit_program():
     """Exits program"""
     print("Exiting program.")
     sys.exit(0)
+
+display_welcome_page()

@@ -20,3 +20,14 @@ Step 6: To share changes with remote repo, need to push
     git push origin master
 """
 
+"""
+Setting up repos for microservice
+
+1. Create new repo on github
+2. git init
+3. git add ./
+4. git commit -m "Comment"
+5. git remote add origin [link to repo]
+6. git push -u origin master
+
+"""
