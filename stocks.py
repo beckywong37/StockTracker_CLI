@@ -4,7 +4,6 @@ Creates the Stock object and Watchlist object
 
 import yfinance as yf
 from colorama import init, Fore, Style
-import json
 import requests
 
 
@@ -50,7 +49,7 @@ class Stock:
         self.recommend = recommend
 
     def conv_dict(self):
-        """Convert stock to dictionary format for JSON"""
+        """Convert stock to dictionary format for microservice A"""
         return {
             "ticker": self.ticker,
             "price": self.price,
@@ -79,6 +78,7 @@ class Watchlist:
         # If stock is not in watchlist, append
         self.stock_list.append(stock_object)
         print(f"{stock_object.ticker} has been successfully added to your watchlist")
+        self.save_watchlist()
 
     def remove_stock(self, ticker):
         """Remove ticker attribute of stock object from stock list"""
@@ -86,11 +86,12 @@ class Watchlist:
             if stock.ticker == ticker:
                 self.stock_list.remove(stock)
                 print(f"{ticker} has been successfully removed from your watchlist")
+                self.save_watchlist()
                 return
         print(f"{ticker} is not in watchlist.")
 
     def get_json(self):
-        """Converts stock list into a JSON object"""
+        """Converts stock list into a JSON object. Use for Microservice A"""
         return [stock.conv_dict() for stock in self.stock_list]
 
     def sort_list(self, sortBy, sortOrder):
@@ -108,6 +109,34 @@ class Watchlist:
         else:
             print("error")
 
+    def save_watchlist(self):
+        """Saves watchlist to Microservice D"""
+        url = 'http://127.0.0.1:5003/save_watchlist'
+        # Converts stock list to json format
+        data = {"watchlist": self.get_json()}
+        response = requests.post(url, json=data)
+        if response.status_code == 200:
+            print("Watchlist saved successfully")
+        else:
+            print("Save unsuccessful")
+
+    def load_watchlist(self):
+        """Loads watchlist saved in Microservice D"""
+        url = 'http://127.0.0.1:5003/load_watchlist'
+        # Gets watchlist from microservice
+        response = requests.get(url)
+        if response.status_code == 200:
+            watchlist_data = response.json()
+            # Create stock object and add to stock_list
+            for stock_data in watchlist_data:
+                stock = Stock(ticker=stock_data['ticker'],
+                              price=stock_data['price'],
+                              change=stock_data['change'],
+                              high_52=stock_data['high_52'],
+                              low_52=stock_data['low_52'],
+                              recommend=stock_data['recommend'])
+                self.stock_list.append(stock)
+
     def print_stock_list(self):
         """Prints stock objects currently in stock list"""
         for stock in self.stock_list:
@@ -124,27 +153,27 @@ class Watchlist:
         if len(self.stock_list) == 0:
             print(Fore.RED +f"""
         Stock Watchlist:
-        -----------------------------------------------------------------------------------
+        ----------------------------------------------------------------------------------------
         | Ticker  | Price     | % Change  | 52W Low/High   | Recommendation |
-        -----------------------------------------------------------------------------------
+        ----------------------------------------------------------------------------------------
         [empty]
-        -----------------------------------------------------------------------------------
+        ----------------------------------------------------------------------------------------
             """)
         # If not empty, print each stock and info into watchlist
         else:
             print(Fore.RED +f"""
         Stock Watchlist:
         -----------------------------------------------------------------------------------
-        | Ticker  | Price     | % Change  | 52W Low/High   | Recommendation |
+        | Ticker    | Price      | % Change   | 52W Low/High      | Recommendation |
         -----------------------------------------------------------------------------------""")
             for stock in stock_to_display:
                 # If stock is a dictionary, use this format
                 if isinstance(stock, dict):
                     print(
-                        Fore.RED + f"        | {stock['ticker']:<7} | {stock['price']:<9} | {stock['change']:<9} | {stock['low_52']}/{stock['high_52']:<7} | {stock['recommend']}")
+                        Fore.RED + f"        | {stock['ticker']:<9} | {stock['price']:<10} | {stock['change']:<10} | {stock['low_52']}/{stock['high_52']:<9} | {stock['recommend']}")
                 # If stock is an object, use this format
                 else:
-                    print(Fore.RED + f"        | {stock.ticker:<7} | {stock.price:<9} | {stock.change:<9} | {stock.low_52}/{stock.high_52:<7} | {stock.recommend}")
+                    print(Fore.RED + f"        | {stock.ticker:<9} | {stock.price:<10} | {stock.change:<10} | {stock.low_52}/{stock.high_52:<10} | {stock.recommend}")
             print(Fore.RED + "        -----------------------------------------------------------------------------------")
 
 
@@ -153,6 +182,8 @@ class Watchlist:
 # watchlist = Watchlist()
 # watchlist.add_stock('AAPL', stock1)
 # watchlist.add_stock('TSLA', stock2)
+# watchlist.save_watchlist()
+# watchlist.load_watchlist()
 # watchlist.display_watchlist()
 # watchlist.get_json()
 # watchlist.sort_list('price', 'dsc')

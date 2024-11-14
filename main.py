@@ -2,7 +2,7 @@
 Provides UI design and major functionalities of the Stock Tracker CLI-based application
 """
 # Import modules
-import requests
+import sys
 from stocks import *
 
 # Initialize colorama
@@ -12,7 +12,7 @@ init(autoreset=True)
 watchlist = Watchlist()
 
 def display_logo():
-    print(Fore.GREEN +"""
+    print(Fore.GREEN+"""
             ____________            ______      ________                   ______              
         __  ___/_  /_______________  /__    ___  __/____________ _________  /______________
         _____ \_  __/  __ \  ___/_  //_/    __  /  __  ___/  __ `/  ___/_  //_/  _ \_  ___/
@@ -43,9 +43,11 @@ def display_welcome_page():
     cmd = input("Please enter a command: ").strip()
     # Process user input
     if cmd == "1":
+        # Load watchlist from previous session
+        watchlist.load_watchlist()
         display_dashboard()
     elif cmd == "q":
-        print("Exiting program.")
+        exit_program()
     else:
         print("Invalid command. Please enter either 1 or q")
         display_welcome_page()
@@ -67,7 +69,6 @@ def display_dashboard():
         ----------------------------------------------------------------------------------
         [1] Edit your watchlist
         [2] View news articles
-        [3] Go back to welcome page
         [q] Enter ‘q’ to exit
         ----------------------------------------------------------------------------------""")
     # Get user input
@@ -77,10 +78,8 @@ def display_dashboard():
         display_watchlist()
     elif cmd == "2":
         display_news_page()
-    elif cmd == "3":
-        display_welcome_page()
     elif cmd == "q":
-        print("Exiting program.")
+        exit_program()
     else:
         print("Invalid command.")
         display_dashboard()
@@ -188,14 +187,12 @@ def display_news_page():
             Date: {date}
             Url: {url}""")
 
-
-
 def clean_watchlist_display(watchlist, sort_list=None):
     """When user enters H, commands are hidden to provide cleaner display"""
     print(Fore.GREEN + """
-        =======================================================================================
-                                Welcome to Your Watchlist!
-        ======================================================================================= """ + Fore.LIGHTBLUE_EX + """
+        ===================================================================================
+                                    Welcome to Your Watchlist!
+        =================================================================================== """ + Fore.LIGHTBLUE_EX + """
         To add or remove stocks from your watchlist, enter:
         add [ticker] | remove [ticker]
         Example: add AAPL | remove AAPL""")
@@ -205,14 +202,14 @@ def clean_watchlist_display(watchlist, sort_list=None):
         watchlist.display_watchlist(sort_list)
     print(Fore.YELLOW + """
         [Commands are currently hidden. Enter ‘S’ to show commands.]
-        ---------------------------------------------------------------------------------------""")
+        ----------------------------------------------------------------------------------""")
 
 def inform_watchlist_display(watchlist, sort_list=None):
     """Default display """
     print(Fore.GREEN + """
-        =======================================================================================
+        ===================================================================================
                                     Welcome to Your Watchlist!
-        ======================================================================================= """ + Fore.LIGHTBLUE_EX + """
+        =================================================================================== """ + Fore.LIGHTBLUE_EX + """
         To add or remove stocks from your watchlist, enter:
         add [ticker] | remove [ticker]
         Example: add AAPL | remove AAPL""")
@@ -222,14 +219,14 @@ def inform_watchlist_display(watchlist, sort_list=None):
         watchlist.display_watchlist(sort_list)
     print(Fore.YELLOW + """
         Commands (Enter ‘H’ to hide commands)
-        ---------------------------------------------------------------------------------------
+        ----------------------------------------------------------------------------------
         add [ticker] : to add stock to watchlist 
         remove [ticker] : to remove stock from watchlist
-        sort [sortBy] [sortOrder] : sortBy opt (ticker, price, recommendation), sortOrder (asc, dsc)
+        sort [sortBy] [sortOrder] : sortBy opt (ticker, price), sortOrder (asc, dsc)
         [1] : to return to dashboard 
         [H] : Hide list of commands
         [S] : Show list of commands
-        ---------------------------------------------------------------------------------------""")
+        ---------------------------------------------------------------------------------""")
 
 def display_major_market():
     """Creates display for major market indices. Intended to be displayed on the dashboard"""
@@ -255,9 +252,7 @@ def display_major_market():
         ----------------------------------------------------------------------------------
         """)
 
-
-
-# display_major_market()
-# display_welcome_page()
-display_watchlist()
-# display_news_page()
+def exit_program():
+    """Exits program"""
+    print("Exiting program.")
+    sys.exit(0)
