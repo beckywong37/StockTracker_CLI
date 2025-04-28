@@ -2,7 +2,7 @@ Stock Tracker is a command line stock tracking application that allows users to 
 
 Theres are the main features:
 - Add and remove stocks from user's watchlist
-- Persistant watchlist: Current watchlist is saved to a JSON file each time the user modifies their watchlist. When a user starts a new session, it also loads the watchlist from the previou session.
+- Persistant watchlist: Current watchlist is saved to a JSON file each time the user modifies their watchlist. When a user starts a new session, it also loads the watchlist from the previous session.
 - Sort watchlist by any of the column names (Provided by stock_watchlist_sorter microservice)
 - Displays the stock price of major indices includign NASDAQ, S&P500, and Dow Jones
 - Retrieves top news articles and provides links to these articles
